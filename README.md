@@ -1,34 +1,33 @@
 # smarthome_v2
 
+
+Each chip listens to a unique channel. Room and Chip name are used as part of that unique channel.
+
+For example:
+sending and receiving command to channel
+home/rooms/kitchen/things/front_door/command
+
 Chip Response (JSON)
 {
-    "id": "9dca81bf-ba14-4840-a600-d26f1f4e3ac6",
-    "ChipNumber": "1234",
-    "group": "Kitchen",
-    "Room" : "MasterBedroom",
-    "ChipID": "2000726507",
-    "ChipName": "ChipA",
-    "Sensors":[
+    "request_id": "9dca81bf-ba14-4840-a600-d26f1f4e3ac6",
+    "response":[
             {
-            "SensorID": "31772aa2-f04f-43cc-bb36-947b005a398b",
-             "SensorName": "TempSensor",
-             "SensorType": "temperature",
-             "SensorValue": 28
+                "sensor_pin": "1",
+                "sensor_name": "TempSensor",
+                "sensor_type": "temperature",
+                "sensor_value": 28
             },
             {
-            "SensorID": "eb527520-778c-4191-954b-7504bc0a4c5b",
-            "SensorName": "magnetSensor",
-            "SensorType": "magnet",
-            "SensorValue": 1
+                "sensor_pin": "2",
+                "sensor_name": "magnetSensor",
+                "sensor_type": "magnet",
+                "sensor_value": 1
                 },
             {
-            "SensorID": "cdcb9523-d2a0-4144-89ec-fcd22d95bc33",
-            "SensorName": "humiditySensor",
-            "SensorType": "humidity",
-            "SensorValue": 25
-                    }
+                "sensor_pin": "3",
+                "sensor_name": "humiditySensor",
+                "sensor_type": "humidity",
+                "sensor_value": 25
+            }
     ]
-    
-   
-
 }
