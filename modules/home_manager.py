@@ -91,3 +91,7 @@ if __name__ == '__main__':
     front_door = Thing(data)
     front_door.initialize()
     print(front_door.current_status())
+
+    # Send and Receive example
+    # Sending: """{"command":"status"}"""
+    # Response: """{"status": {"sensor_types":["temperature","humidity","magnet"],"sensor_values": [28, 25, 1] }}"""
