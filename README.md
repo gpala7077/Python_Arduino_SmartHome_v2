@@ -10,9 +10,9 @@ home/rooms/kitchen/things/front_door/command
 Chip Response (JSON)
 
     "group": "Kitchen",
-    "Room" : "MasterBedroom",
-    "ChipID": "2000726507",
-    "ChipName": "ChipA",
+    "room" : "MasterBedroom",
+    "chip_id": "2000726507",
+    "chip_name": "ChipA",
     "request_id": "9dca81bf-ba14-4840-a600-d26f1f4e3ac6",
     "response":[
             {
