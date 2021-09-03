@@ -8,7 +8,7 @@ sending and receiving command to channel
 home/rooms/kitchen/things/front_door/command
 
 Chip Response (JSON)
-{
+
     "request_id": "9dca81bf-ba14-4840-a600-d26f1f4e3ac6",
     "response":[
             {
