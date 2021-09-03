@@ -1,7 +1,7 @@
 # smarthome_v2
 
 Chip Response (JSON)
-
+{
     "id": "9dca81bf-ba14-4840-a600-d26f1f4e3ac6",
     "ChipNumber": "1234",
     "group": "Kitchen",
