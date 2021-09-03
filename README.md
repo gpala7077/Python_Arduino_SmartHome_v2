@@ -8,6 +8,7 @@ sending and receiving command to channel
 home/rooms/kitchen/things/front_door/command
 
 Chip Response (JSON)
+
     "group": "Kitchen",
     "Room" : "MasterBedroom",
     "ChipID": "2000726507",
