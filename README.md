@@ -21,7 +21,8 @@ receiving response on: home/rooms/kitchen/things/front_door/response
 
 # Chip Response (JSON)
 {
-    'request_id': '09042021013158', 
+    'request_id': '09042021013158',
+    'thing_id': '234541114',
     'response': 
         [
             {
