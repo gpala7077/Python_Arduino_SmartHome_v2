@@ -5,29 +5,36 @@ Each chip listens to a unique channel. Room and Chip name are used as part of th
 
 For example:
 sending and receiving command to channel
-home/rooms/kitchen/things/front_door/command
+home/rooms/kitchen/things/front_door/requests
+
+Hub Request (JSON)
+{
+    "request_id": '09042021013158', 
+    "command": "status"
+}
 
 Chip Response (JSON)
 {
-    "request_id": "9dca81bf-ba14-4840-a600-d26f1f4e3ac6",
-    "response":[
+    'request_id': '09042021013158', 
+    'response': 
+        [
             {
-                "sensor_pin": "1",
-                "sensor_name": "TempSensor",
-                "sensor_type": "temperature",
-                "sensor_value": 28
-            },
+                'sensor_name': 'temp/humid', 
+                'sensor_type': 'temperature', 
+                'sensor_pin': 2, 
+                'sensor_value': 28
+            }, 
             {
-                "sensor_pin": "2",
-                "sensor_name": "magnetSensor",
-                "sensor_type": "magnet",
-                "sensor_value": 1
-                },
+                'sensor_name': 'temp/humid', 
+                'sensor_type': 'humidity', 
+                'sensor_pin': 2, 
+                'sensor_value': 25
+            }, 
             {
-                "sensor_pin": "3",
-                "sensor_name": "humiditySensor",
-                "sensor_type": "humidity",
-                "sensor_value": 25
+                'sensor_name': 'front_door', 
+                'sensor_type': 'magnet', 
+                'sensor_pin': 0, 
+                'sensor_value': 1
             }
-    ]
+        ]
 }
