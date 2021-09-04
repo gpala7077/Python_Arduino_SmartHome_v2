@@ -3,17 +3,23 @@
 
 Each chip listens to a unique channel. Room and Chip name are used as part of that unique channel.
 
-For example:
-sending and receiving command to channel
-home/rooms/kitchen/things/front_door/requests
+Assuming the following:
+sending request on: home/rooms/kitchen/things/front_door/requests
 
-Hub Request (JSON)
+receiving response on: home/rooms/kitchen/things/front_door/response
+
+
+# Scenario 1: Requesting a status update
+
+```python
+# Hub Request (JSON)
+
 {
     "request_id": '09042021013158', 
     "command": "status"
 }
 
-Chip Response (JSON)
+# Chip Response (JSON)
 {
     'request_id': '09042021013158', 
     'response': 
@@ -38,3 +44,19 @@ Chip Response (JSON)
             }
         ]
 }
+```
+
+# Scenario 2 - Requesting to turn on a relay
+```python
+# Hub Request (JSON)
+{
+    "request_id": '09042021013159', 
+    "command": "light1_ON"
+}
+
+# Chip Response (JSON)
+{
+    'request_id': '09042021013159', 
+    'response': 'Success'
+}
+```
