@@ -59,6 +59,8 @@ class Main:
             for result in as_completed(status):  # Wait until all things have been read
                 results += result.result()
 
+        if request == 'status':
+            self.status = pd.DataFrame(results)
         return results
 
     def mosquitto_callback(self, client, userdata, message):
@@ -128,7 +130,7 @@ class Main:
                     self.third_party['sonos'].player.volume -= 10
 
         elif len(command) > 0 and isinstance(command[0], Rule):
-            status = pd.DataFrame(self.send_request('status'))  # True for current status, False for last known status.
+            status = self.get_status(current=False)  # True for current status, False for last known status.
             check_rules = []  # Initialize empty condition list
             results = []  # Initialize empty result list
             with ThreadPoolExecutor() as executor:  # Begin sub-threads
@@ -141,6 +143,7 @@ class Main:
 
     def process_rule(self, rule, status):
         if rule.check_conditions(status):  # If Rule passes all conditions
+            print(rule)
             if rule.rule_sensor in self.timers:  # If timer exists, cancel and replace
                 self.timers[rule.rule_sensor].cancel()
 
@@ -166,6 +169,12 @@ class Main:
             'select * '
             'from commands '
             'where device_id="{}"'.format(unique_id))
+
+    def get_status(self, current=True):
+        if current:
+            self.status = pd.DataFrame(self.send_request('status'))
+
+        return self.status
 
 
 class Home(Main):
