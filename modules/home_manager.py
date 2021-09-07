@@ -70,7 +70,7 @@ class Main:
         print('\n{} Received message!\n{}\n{}\n'.format(self.data['name'], topic, msg))
 
         if 'interrupt' in topic:  # If interrupt
-            if isinstance(self, Room):
+            if isinstance(self, Room): # Only execute interrupts at the room level
                 self.execute(msg['interrupt'], 'interrupt')
 
         elif 'request' in topic:  # If request
