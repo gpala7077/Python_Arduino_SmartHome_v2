@@ -11,3 +11,6 @@ class Database:
     def query(self, query):
         return pd.read_sql(query, self.engine)
 
+    def insert(self, data, table):
+        data.to_sql(self.engine, table, if_exists='APPEND')
+        return 'Inserted Data'
