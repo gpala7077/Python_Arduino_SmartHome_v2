@@ -6,6 +6,7 @@ from config.configurations import house_id
 def main():
     print('Starting SmartHome_v2')
     home = Home(house_id)
+    home.start()
     print(home.get_status())
 
 

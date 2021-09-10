@@ -1,7 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 import json
-from threading import Timer
+from threading import Timer, Thread
 
 from modules.database_manager import Database
 from modules.hue_manager import Hue
@@ -12,14 +12,15 @@ from modules.commands_manager import Command, Rule
 import pandas as pd
 
 
-class Main:
+class Main(Thread):
     def __init__(self, unique_id):
+        super().__init__()
         self.mosquitto = MQTT_Client(self.mosquitto_callback)
         self.database = Database()
         self.requests = dict()
         self.third_party = dict()
         self.timers = dict()
-        self.status = None
+        self.status = pd.DataFrame()
         self.children = None
         self.mqtt_data = None
         self.name = None
@@ -27,9 +28,7 @@ class Main:
         self.conditions = None
         self.commands = None
         self.data = None
-
         self.get_data(unique_id)
-        self.initialize()
 
     def initialize(self):
         """Start up program"""
@@ -67,19 +66,23 @@ class Main:
         """Mosquitto callback function."""
         msg = message.payload.decode("utf-8")  # Decode message
         topic = message.topic  # Get topic
-        msg = msg.replace("'", "\"")  # Replace single for double quotes
-        msg = json.loads(msg)  # convert string to dictionary
         print('\n{} Received message!\n{}\n{}\n'.format(self.data['name'], topic, msg))
+        try:
+            msg = msg.replace("'", "\"")  # Replace single for double quotes
+            msg = json.loads(msg)  # convert string to dictionary
 
-        if 'interrupt' in topic:  # If interrupt
-            if isinstance(self, Room): # Only execute interrupts at the room level
-                self.execute(msg['interrupt'], 'interrupt')
+            if 'interrupt' in topic:  # If interrupt
+                if isinstance(self, Room): # Only execute interrupts at the room level
+                    self.execute(msg['interrupt'], 'interrupt')
 
-        elif 'request' in topic:  # If request
-            self.execute(msg['request'], 'request')
+            elif 'request' in topic:  # If request
+                self.execute(msg['request'], 'request')
 
-        elif 'response' in topic:  # If response
-            self.requests[msg['request_id']] = msg['response']
+            elif 'response' in topic:  # If response
+                self.requests[msg['request_id']] = msg['response']
+        except:
+            print('Error occured')
+            print(msg)
 
     def execute(self, command, command_type):
         """Execute command."""
@@ -107,14 +110,18 @@ class Main:
 
                 command.append(Rule(rule, cmd, conditions))  # initialize new Rule object
 
+        elif command_type == 'command':
+            if not isinstance(command, Command):
+                command = Command(command)
+
         print(command)  # Print the canonical string representation
         if isinstance(command, Command):  # If object is of type Command
             # ***************** Phillips Hue - Third Party Commands *****************
             if command.command_type == 'hue':
+                if 'hue' in self.third_party:
+                    command.command_value = command.command_value.replace("'", "\"")
 
-                command.command_value = command.command_value.replace("'", "\"")
-
-                print(self.third_party['hue'].set_group(command.command_sensor, command.command_value))
+                    print(self.third_party['hue'].set_group(command.command_sensor, command.command_value))
 
             # ***************** Sonos - Third Party Commands *****************
             elif command.command_type == 'sonos':
@@ -149,7 +156,9 @@ class Main:
 
             if rule.rule_timer > 0:  # Create new timer
                 self.timers.update(
-                    {rule.rule_sensor: Timer(interval=rule.rule_timer, function=self.execute, args=[rule.commands[1]])})
+                    {rule.rule_sensor: Timer(
+                        interval=rule.rule_timer, function=self.execute, args=[rule.commands[1], 'command']
+                    )})
                 self.timers[rule.rule_sensor].start()
             return self.execute(rule.commands[0], command_type='command')
 
@@ -175,6 +184,13 @@ class Main:
             self.status = pd.DataFrame(self.send_request('status'))
 
         return self.status
+
+    def start(self):
+        super(Main, self).start()
+        self.initialize()
+        if isinstance(self, Room) or isinstance(self,Home):
+            for child in self.children:
+                self.children[child].start()
 
 
 class Home(Main):
@@ -257,13 +273,13 @@ class Thing(Main):
     def __init__(self, data):
         super().__init__(data)
 
-    def send_request(self, request, timeout=5):
+    def send_request(self, request, timeout=60):
         request_id = datetime.now().strftime("%m%d%Y%H%M%S")
         self.requests.update({request_id: None})
 
         payload = {"request_id": request_id, "request": request}  # define payload
 
-        self.mosquitto.broadcast(self.mqtt_data['publish'], payload)  # Request thing status
+        self.mosquitto.broadcast(self.mqtt_data['publish'], payload)  # Request
 
         started = datetime.now()
         while self.requests[request_id] is None:
@@ -295,7 +311,7 @@ class Thing(Main):
             'subscribe': self.database.query(
                 'select channel_broadcast '
                 'from mosquitto_channels '
-                'where info_level=3 and channel_type in ("response","interrupt")')
+                'where info_level=3 and channel_type in ("response", "interrupt")')
                 .replace('room_name', self.data['room_name'].replace(' ', '_').lower(), regex=True)
                 .replace('thing_name', self.data['name'].replace(' ', '_').lower(), regex=True)[
                 'channel_broadcast'].tolist(),

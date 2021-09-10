@@ -138,26 +138,29 @@ class Rule:
             Pandas data frame of all current sensors in room
 
         """
-        conditions_check = []  # Initialize empty condition list
-        results = []  # Initialize empty result list
-        with ThreadPoolExecutor() as executor:  # Begin sub-threads
-            for condition in self.conditions:  # iterate through each condition
+        if not status.empty:
+            conditions_check = []  # Initialize empty condition list
+            results = []  # Initialize empty result list
+            with ThreadPoolExecutor() as executor:  # Begin sub-threads
+                for condition in self.conditions:  # iterate through each condition
 
-                if any(char.isdigit() for char in condition.condition_check):
-                    data = status.query('sensor_name == "{}"'.format(condition.condition_check))  # filter status data
+                    if any(char.isdigit() for char in condition.condition_check):
+                        data = status.query('sensor_name == "{}"'.format(condition.condition_check))  # filter status data
 
+                    else:
+                        data = status.query('sensor_type == "{}"'.format(condition.condition_check))  # filter status data
+
+                    conditions_check.append(executor.submit(condition.condition_met, data=data))  # submit to thread pool
+
+                for result in as_completed(conditions_check):  # Wait until all conditions have finished
+                    results.append(result.result())  # Append result to result list
+
+                if [True] * len(results) == results:  # If all conditions are met, return True
+                    return True
                 else:
-                    data = status.query('sensor_type == "{}"'.format(condition.condition_check))  # filter status data
-
-                conditions_check.append(executor.submit(condition.condition_met, data=data))  # submit to thread pool
-
-            for result in as_completed(conditions_check):  # Wait until all conditions have finished
-                results.append(result.result())  # Append result to result list
-
-            if [True] * len(results) == results:  # If all conditions are met, return True
-                return True
-            else:
-                return False
+                    return False
+        else:
+            return False
 
     def __repr__(self):
         """Canonical string representation of rule."""

@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" remoteFilesAllowedToDisappearOnAutoupload="false">
+  <component name="PublishConfigData" autoUpload="Always" serverName="pi@192.168.50.90:22 password" remoteFilesAllowedToDisappearOnAutoupload="false">
     <serverData>
+      <paths name="ec2-user@3.142.184.109:22 key">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="ec2-user@3.21.156.39:22">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="gerardo@192.168.50.173:22 password">
         <serverdata>
           <mappings>
@@ -19,10 +33,13 @@
       <paths name="pi@192.168.50.90:22 password">
         <serverdata>
           <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/home/pi/IoT/smarthomev2" local="$PROJECT_DIR$/raspberry pi" web="/" />
+            <mapping deploy="/home/pi/IoT/smarthomev2/modules" local="$PROJECT_DIR$/modules" web="/" />
+            <mapping deploy="/home/pi/IoT/smarthomev2/config" local="$PROJECT_DIR$/config" />
           </mappings>
         </serverdata>
       </paths>
     </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
   </component>
 </project>
