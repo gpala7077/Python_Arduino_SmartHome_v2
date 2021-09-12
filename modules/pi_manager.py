@@ -41,9 +41,6 @@ class MCU:
     interrupts : object
         Object of type Queue, manages list of interrupts
 
-    process_interrupt : function
-        Passed function to process current interrupts
-
     Parameters
     ----------
     data : dict

@@ -1,3 +1,4 @@
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 import json
@@ -67,22 +68,18 @@ class Main(Thread):
         msg = message.payload.decode("utf-8")  # Decode message
         topic = message.topic  # Get topic
         print('\n{} Received message!\n{}\n{}\n'.format(self.data['name'], topic, msg))
-        try:
-            msg = msg.replace("'", "\"")  # Replace single for double quotes
-            msg = json.loads(msg)  # convert string to dictionary
+        msg = msg.replace("'", "\"")  # Replace single for double quotes
+        msg = json.loads(msg)  # convert string to dictionary
 
-            if 'interrupt' in topic:  # If interrupt
-                if isinstance(self, Room): # Only execute interrupts at the room level
-                    self.execute(msg['interrupt'], 'interrupt')
+        if 'interrupt' in topic:  # If interrupt
+            if isinstance(self, Room):  # Only execute interrupts at the room level
+                self.execute(msg['interrupt'], 'interrupt')
 
-            elif 'request' in topic:  # If request
-                self.execute(msg['request'], 'request')
+        elif 'request' in topic:  # If request
+            self.execute(msg['request'], 'request')
 
-            elif 'response' in topic:  # If response
-                self.requests[msg['request_id']] = msg['response']
-        except:
-            print('Error occured')
-            print(msg)
+        elif 'response' in topic:  # If response
+            self.requests[msg['request_id']] = msg['response']
 
     def execute(self, command, command_type):
         """Execute command."""
@@ -188,7 +185,7 @@ class Main(Thread):
     def start(self):
         super(Main, self).start()
         self.initialize()
-        if isinstance(self, Room) or isinstance(self,Home):
+        if isinstance(self, Room) or isinstance(self, Home):
             for child in self.children:
                 self.children[child].start()
 
@@ -273,7 +270,7 @@ class Thing(Main):
     def __init__(self, data):
         super().__init__(data)
 
-    def send_request(self, request, timeout=60):
+    def send_request(self, request, timeout=20):
         request_id = datetime.now().strftime("%m%d%Y%H%M%S")
         self.requests.update({request_id: None})
 
@@ -282,12 +279,14 @@ class Thing(Main):
         self.mosquitto.broadcast(self.mqtt_data['publish'], payload)  # Request
 
         started = datetime.now()
-        while self.requests[request_id] is None:
-            if (datetime.now() - started).total_seconds() >= timeout:
-                print('No Response. Device might be disconnected')
-                return []
-
-        return self.requests.pop(request_id)
+        try:
+            while self.requests[request_id] is None:
+                if (datetime.now() - started).total_seconds() >= timeout:
+                    print('No Response. Device might be disconnected')
+                    return []
+            return self.requests.pop(request_id)
+        except:
+            print('Error occurred with {}'.format(self.__class__.__name__))
 
     def get_data(self, unique_id):
         super(Thing, self).get_data(unique_id)
@@ -325,4 +324,3 @@ class Thing(Main):
                 'channel_broadcast'].tolist()[0],
 
         }
-

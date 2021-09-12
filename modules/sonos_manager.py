@@ -1,7 +1,7 @@
 import random
 import time
 from soco import SoCo
-
+import re
 import pyttsx3
 
 
@@ -28,6 +28,13 @@ class Sonos:
         current_position = self.player.get_current_track_info()[u'position']
         current_title = self.player.get_current_track_info()[u'title']
         current_uri = self.player.get_current_track_info()[u'uri']
+        current_metadata = self.player.get_current_track_info()[u'metadata']
+        if 'spotify' in current_metadata:
+            start = re.search('x-sonos-spotify',current_metadata)
+            end = re.search('sid=12', current_metadata)
+            print(start.start(), end.start())
+            print(current_metadata)
+            current_uri = current_metadata[start.start():end.start()+6]
 
         duration = max(2, len(message) / 6)     # Estimate the duration of the voice response
         self.tts(message)
@@ -36,6 +43,7 @@ class Sonos:
 
         if current_transport_info == "PLAYING":
             print('Sonos was playing {}. Starting from the paused position.' .format(current_title))
+            print(current_uri)
             self.player.play_uri(current_uri)
             self.player.seek(current_position)
             self.player.play()
