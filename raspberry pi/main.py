@@ -1,9 +1,9 @@
-from modules.pi_manager import getserial, MCU, Thing_Main
+from modules.pi_manager import get_serial, MCU, Thing_Main
 from modules.mosquitto_manager import MQTT_Client
 
 # TODO Initial setup data should be entered in using a configuration website hosted by the raspberry pi.
 data = {
-    'thing_id': getserial(),
+    'thing_id': get_serial(),
     'name': 'Pi Kitchen1', # Website should enter this value
     'room': 'Kitchen',
     'mqtt_data': { # This should be automated and built from the thing name and room name
