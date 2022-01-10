@@ -1,5 +1,8 @@
 # smarthome_v2
+# Description
+This is a python and arduino based smarthome system that is still a work in process. It focuses the use of a combination of raspberry pi's, arduinos, and a jetson nano as the base hub. All the devices communicate via MQTT protocol and all sensors have been hand soldered in place. This is version two, as it represents slightly cleaner code with an eye with dynamic programming style as opposed to hardcoding. 
 
+# Chip Calls
 
 Each chip listens to a unique channel. Room and Chip name are used as part of that unique channel.
 
